@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import net.croods.journalApp.entity.JournalEntry;
+import net.croods.journalApp.entity.User;
 import net.croods.journalApp.service.JournalEntryService;
+import net.croods.journalApp.service.UserService;
 
 
 @RestController
@@ -27,22 +29,30 @@ public class JournalEntryControllerV2 {
     @Autowired
     private JournalEntryService journalEntryService;
 
-
+     @Autowired
+     private UserService userService;
 
 
     // if I do a get req for /journal endpoint i will hit this class
-    @GetMapping  
-    public List<JournalEntry> getAll(){
-      return journalEntryService.getAll();
+    @GetMapping("{username}")
+    public ResponseEntity<?> getAllEntriesByUser(@PathVariable String username){
+       User user = userService.findByUserName(username);
+       if (user == null) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+      List<JournalEntry> all = user.getJournalEntries();
+      if (all != null && !all.isEmpty()) {
+        return new ResponseEntity<>(all, HttpStatus.OK);
+      }
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
      // if I do a post req for /journal endpoint i will hit this class
-    @PostMapping
-    public ResponseEntity<?> createEntry(@RequestBody JournalEntry myEntry){
+    @PostMapping("{username}")
+    public ResponseEntity<?> createEntry(@RequestBody JournalEntry myEntry, @PathVariable String username){
       try {
+        journalEntryService.saveEntry(myEntry, username);
         String msg = "entry created";
-        myEntry.setDate(LocalDateTime.now());
-        journalEntryService.saveEntry(myEntry);
          return new ResponseEntity<>(msg, HttpStatus.CREATED);
         
       } catch (Exception e) {
@@ -67,15 +77,15 @@ public class JournalEntryControllerV2 {
 
     }
 
-    @PutMapping("/id/{myId}")
-    public JournalEntry createEntry(@RequestBody JournalEntry newEntry, @PathVariable ObjectId myId){
-      JournalEntry old = journalEntryService.findById(myId).orElse(null);
-      if(old != null){
-        old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle() );
-        old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
-      }
-      journalEntryService.saveEntry(old);
-      return old;
-    }
+    // @PutMapping("/id/{myId}")
+    // public JournalEntry createEntry(@RequestBody JournalEntry newEntry, @PathVariable ObjectId myId){
+    //   JournalEntry old = journalEntryService.findById(myId).orElse(null);
+    //   if(old != null){
+    //     old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle() );
+    //     old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
+    //   }
+    //   journalEntryService.saveEntry(old);
+    //   return old;
+    // }
     
 }

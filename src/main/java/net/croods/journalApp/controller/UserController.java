@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,9 +39,9 @@ public class UserController {
     userService.saveEntry(user);
   }
 
-  @PutMapping
-  public ResponseEntity<?> updateUser(@RequestBody User user){
-   User userInDb =  userService.findByUserName(user.getUserName());
+  @PutMapping("/{userName}")
+  public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable String userName){
+   User userInDb =  userService.findByUserName(userName);
    if (userInDb != null) {
       userInDb.setUserName(user.getUserName());
       userInDb.setPassword(user.getPassword());

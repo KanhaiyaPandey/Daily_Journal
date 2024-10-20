@@ -1,5 +1,6 @@
 package net.croods.journalApp.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 // import org.apache.el.stream.Optional;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import net.croods.journalApp.entity.JournalEntry;
+import net.croods.journalApp.entity.User;
 import net.croods.journalApp.repository.JournalEntryRepository;
 
 // all the business logic go through  service
@@ -20,8 +22,15 @@ public class JournalEntryService {
     @Autowired
     private JournalEntryRepository journalEntryRepository;
 
-    public void saveEntry(JournalEntry journalEntry){
-        journalEntryRepository.save(journalEntry);
+    @Autowired
+    private UserService userService;
+
+    public void saveEntry(JournalEntry journalEntry, String username){
+        User user = userService.findByUserName(username);
+        journalEntry.setDate(LocalDateTime.now());
+        JournalEntry saved =  journalEntryRepository.save(journalEntry);
+        user.getJournalEntries().add(saved);
+        userService.saveEntry(user);
     }
 
     public List<JournalEntry> getAll(){
