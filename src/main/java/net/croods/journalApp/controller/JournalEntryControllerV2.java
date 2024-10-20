@@ -61,6 +61,8 @@ public class JournalEntryControllerV2 {
 
     }
 
+    // get journal entry by id
+
     @GetMapping("/id/{myId}")
     public ResponseEntity<JournalEntry> getJournalEntryById(@PathVariable ObjectId myId){
      Optional<JournalEntry> journalEntry = journalEntryService.findById(myId);
@@ -70,22 +72,24 @@ public class JournalEntryControllerV2 {
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/id/{myId}")
-    public ResponseEntity<?> deleteJournalEntryById(@PathVariable ObjectId myId){
-      journalEntryService.deleteById(myId);
+    // delete user's journal entry by id and username
+
+    @DeleteMapping("/id/{username}/{myId}")
+    public ResponseEntity<?> deleteJournalEntryById(@PathVariable ObjectId myId, @PathVariable String username){
+      journalEntryService.deleteById(myId, username);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
 
-    // @PutMapping("/id/{myId}")
-    // public JournalEntry createEntry(@RequestBody JournalEntry newEntry, @PathVariable ObjectId myId){
-    //   JournalEntry old = journalEntryService.findById(myId).orElse(null);
-    //   if(old != null){
-    //     old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle() );
-    //     old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
-    //   }
-    //   journalEntryService.saveEntry(old);
-    //   return old;
-    // }
+    @PutMapping("/id/{username}/{myId}")
+    public JournalEntry createEntry(@RequestBody JournalEntry newEntry, @PathVariable ObjectId myId, @PathVariable String username){
+      JournalEntry old = journalEntryService.findById(myId).orElse(null);
+      if(old != null){
+        old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle() );
+        old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
+      }
+      journalEntryService.saveEntry(old);
+      return old;
+    }
     
 }
