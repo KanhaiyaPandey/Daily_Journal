@@ -1,6 +1,5 @@
 package net.croods.journalApp.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import java.util.Optional;
@@ -38,13 +37,13 @@ public class JournalEntryControllerV2 {
     public ResponseEntity<?> getAllEntriesByUser(@PathVariable String username){
        User user = userService.findByUserName(username);
        if (user == null) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("no user found",HttpStatus.NOT_FOUND);
     }
       List<JournalEntry> all = user.getJournalEntries();
       if (all != null && !all.isEmpty()) {
         return new ResponseEntity<>(all, HttpStatus.OK);
       }
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("no journal entries found",HttpStatus.NOT_FOUND);
     }
 
      // if I do a post req for /journal endpoint i will hit this class

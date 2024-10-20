@@ -10,6 +10,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.data.util.Optionals;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import net.croods.journalApp.entity.JournalEntry;
 import net.croods.journalApp.entity.User;
@@ -25,6 +26,7 @@ public class JournalEntryService {
     @Autowired
     private UserService userService;
 
+    @Transactional
     public void saveEntry(JournalEntry journalEntry, String username){
         User user = userService.findByUserName(username);
         journalEntry.setDate(LocalDateTime.now());

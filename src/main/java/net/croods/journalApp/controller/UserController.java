@@ -35,8 +35,15 @@ public class UserController {
   // create user
 
   @PostMapping
-  public void createUser(@RequestBody User user){
-    userService.saveEntry(user);
+  public ResponseEntity<?> createUser(@RequestBody User user){
+    try {
+      userService.saveEntry(user);
+      String msg = "user created";
+      return new ResponseEntity<>(msg,HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(e,HttpStatus.BAD_REQUEST);
+    }
+  
   }
 
   @PutMapping("/{userName}")
